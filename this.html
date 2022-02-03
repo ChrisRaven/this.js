@@ -93,24 +93,24 @@ let Literal = {
 
 function ConstructorFunction() {
   let m1 = function (c) {
-    check(this, 'Function, private function method', c);
-    (function (c) { check(this, 'Function, private function method, function', c); })(c);
-    ((c) => { check(this, 'Function, private function method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, private function method', c);
+    (function (c) { check(this, 'ConstructorFunction, private function method, function', c); })(c);
+    ((c) => { check(this, 'ConstructorFunction, private function method, arrow', c); })(c);
 
     return {
-      n1: function () { check(this, 'Function, private function method -> function', c); },
-      n2: (c) => { check(this, 'Function, private function method -> arrow', c); }
+      n1: function () { check(this, 'ConstructorFunction, private function method -> function', c); },
+      n2: (c) => { check(this, 'ConstructorFunction, private function method -> arrow', c); }
     };
   };
 
   let m2 = (c) => {
-    check(this, 'Function, arrow method', c);
-    (function (c) { check(this, 'Function, private arrow method, function', c); })(c);
-    ((c) => { check(this, 'Function, private arrow method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, arrow method', c);
+    (function (c) { check(this, 'ConstructorFunction, private arrow method, function', c); })(c);
+    ((c) => { check(this, 'ConstructorFunction, private arrow method, arrow', c); })(c);
 
     return {
-      n1: function (c) { check(this, 'Function, private arrow method -> function', c); },
-      n2: (c) => { check(this, 'Function, private arrow method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, private arrow method -> function', c); },
+      n2: (c) => { check(this, 'ConstructorFunction, private arrow method -> arrow', c); }
     };
   };
 
@@ -119,69 +119,69 @@ function ConstructorFunction() {
 
 
   this.m3 = function (c) {
-    check(this, 'Function, this.function method', c);
-    (function (c) { check(this, 'Function, this.function method, function', c); })(c);
-    ((c) => { check(this, 'Function, this.function method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, this.function method', c);
+    (function (c) { check(this, 'ConstructorFunction, this.function method, function', c); })(c);
+    ((c) => { check(this, 'ConstructorFunction, this.function method, arrow', c); })(c);
     
     return {
-      n1: function (c) { check(this, 'Function, this.function method -> function', c); },
-      n2: (c) => { check(this, 'Function, this.function method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, this.function method -> function', c); },
+      n2: (c) => { check(this, 'ConstructorFunction, this.function method -> arrow', c); }
     };
   };
 
   this.m4 = (c) => {
-    check(this, 'Function, this.arrow method', c);
-    (function (c) { check(this, 'Function, this.arrow method, function', c); })(c);
-    ((c) => { check(this, 'Function, this.arrow method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, this.arrow method', c);
+    (function (c) { check(this, 'ConstructorFunction, this.arrow method, function', c); })(c);
+    ((c) => { check(this, 'ConstructorFunction, this.arrow method, arrow', c); })(c);
     
     return {
-      n1: function (c) { check(this, 'Function, this.arrow method -> function', c); },
-      n2: (c) => { check(this, 'Function, this.arrow method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, this.arrow method -> function', c); },
+      n2: (c) => { check(this, 'ConstructorFunction, this.arrow method -> arrow', c); }
     };
   };
 }
 
 ConstructorFunction.prototype.m5 = function (c) {
-  check(this, 'Function.prototype.function', c);
-  (function (c) { check(this, 'Function.prototype.function, function, function', c); })(c);
-  ((c) => { check(this, 'Function.prototype.function, function, arrow', c); })(c);
+  check(this, 'ConstructorFunction.prototype.function', c);
+  (function (c) { check(this, 'ConstructorFunction.prototype.function, function, function', c); })(c);
+  ((c) => { check(this, 'ConstructorFunction.prototype.function, function, arrow', c); })(c);
 
   return {
-    n1: function (c) { check(this, 'Function.prototype.function -> function', c); },
-    n2: (c) => { check(this, 'Function.prototype.function -> arrow', c); }
+    n1: function (c) { check(this, 'ConstructorFunction.prototype.function -> function', c); },
+    n2: (c) => { check(this, 'ConstructorFunction.prototype.function -> arrow', c); }
   };
 };
 
 ConstructorFunction.prototype.m6 = (c) => {
-  check(this, 'Function.prototype.arrow', c);
-  (function (c) { check(this, 'Function.prototype.arrow, function, function', c); })(c);
-  ((c) => { check(this, 'Function.prototype.arrow, function, arrow', c); })(c);
+  check(this, 'ConstructorFunction.prototype.arrow', c);
+  (function (c) { check(this, 'ConstructorFunction.prototype.arrow, function, function', c); })(c);
+  ((c) => { check(this, 'ConstructorFunction.prototype.arrow, function, arrow', c); })(c);
   
   return {
-    n1: function (c) { check(this, 'Function.prototype.arrow -> function', c); },
-    n2: (c) => { check(this, 'Function.prototype.arrow -> arrow', c); }
+    n1: function (c) { check(this, 'ConstructorFunction.prototype.arrow -> function', c); },
+    n2: (c) => { check(this, 'ConstructorFunction.prototype.arrow -> arrow', c); }
   };
 };
 
 ConstructorFunction.m7 = function (c) {
-  check(this, 'Function.function', c);
-  (function (c) { check(this, 'Function.function, function, function', c); })(c);
-  ((c) => { check(this, 'Function.function, function, arrow', c); })(c);
+  check(this, 'ConstructorFunction.function', c);
+  (function (c) { check(this, 'ConstructorFunction.function, function, function', c); })(c);
+  ((c) => { check(this, 'ConstructorFunction.function, function, arrow', c); })(c);
   
   return {
-    n1: function (c) { check(this, 'Function.function -> function', c); },
-    n2: (c) => { check(this, 'Function.function -> arrow', c); }
+    n1: function (c) { check(this, 'ConstructorFunction.function -> function', c); },
+    n2: (c) => { check(this, 'ConstructorFunction.function -> arrow', c); }
   };
 };
 
 ConstructorFunction.m8 = (c) => {
-  check(this, 'Function.arrow', c);
-  (function (c) { check(this, 'Function.arrow, function, function', c); })(c);
-  ((c) => { check(this, 'Function.arrow, function, arrow', c); })(c);
+  check(this, 'ConstructorFunction.arrow', c);
+  (function (c) { check(this, 'ConstructorFunction.arrow, function, function', c); })(c);
+  ((c) => { check(this, 'ConstructorFunction.arrow, function, arrow', c); })(c);
   
   return {
-    n1: function (c) { check(this, 'Function.arrow -> function', c); },
-    n2: (c) => { check(this, 'Function.arrow -> arrow', c); }
+    n1: function (c) { check(this, 'ConstructorFunction.arrow -> function', c); },
+    n2: (c) => { check(this, 'ConstructorFunction.arrow -> arrow', c); }
   };
 };
 
@@ -224,10 +224,10 @@ o2.n2('Literal');
 
 
 ConstructorFunction();
-let FOm5 = ConstructorFunction.prototype.m5('prototype of Function');
+let FOm5 = ConstructorFunction.prototype.m5('prototype of ConstructorFunction');
 FOm5.n1('ConstructorFunction');
 FOm5.n2('ConstructorFunction');
-let FOm6 = ConstructorFunction.prototype.m6('prototype of Function');
+let FOm6 = ConstructorFunction.prototype.m6('prototype of ConstructorFunction');
 FOm6.n1('ConstructorFunction');
 FOm6.n2('ConstructorFunction');
 ConstructorFunction.m7('ConstructorFunction');
@@ -292,24 +292,24 @@ let Literal = {
 
 function ConstructorFunction() {
   let m1 = function (c) {
-    check(this, 'Function, private function method', c);
-    (function (c) { check(this, 'Function, private function method, function', c); })(c);
-    ((c) => { check(this, 'Function, private function method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, private function method', c);
+    (function (c) { check(this, 'ConstructorFunction, private function method, function', c); })(c);
+    ((c) => { check(this, 'ConstructorFunction, private function method, arrow', c); })(c);
 
     return {
-      n1: function () { check(this, 'Function, private function method -> function', c); },
-      n2: (c) => { check(this, 'Function, private function method -> arrow', c); }
+      n1: function () { check(this, 'ConstructorFunction, private function method -> function', c); },
+      n2: (c) => { check(this, 'ConstructorFunction, private function method -> arrow', c); }
     };
   };
 
   let m2 = (c) => {
-    check(this, 'Function, arrow method', c);
-    (function (c) { check(this, 'Function, private arrow method, function', c); })(c);
-    ((c) => { check(this, 'Function, private arrow method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, arrow method', c);
+    (function (c) { check(this, 'ConstructorFunction, private arrow method, function', c); })(c);
+    ((c) => { check(this, 'ConstructorFunction, private arrow method, arrow', c); })(c);
 
     return {
-      n1: function (c) { check(this, 'Function, private arrow method -> function', c); },
-      n2: (c) => { check(this, 'Function, private arrow method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, private arrow method -> function', c); },
+      n2: (c) => { check(this, 'ConstructorFunction, private arrow method -> arrow', c); }
     };
   };
 
@@ -318,69 +318,69 @@ function ConstructorFunction() {
 
 
   this.m3 = function (c) {
-    check(this, 'Function, this.function method', c);
-    (function (c) { check(this, 'Function, this.function method, function', c); })(c);
-    ((c) => { check(this, 'Function, this.function method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, this.function method', c);
+    (function (c) { check(this, 'ConstructorFunction, this.function method, function', c); })(c);
+    ((c) => { check(this, 'ConstructorFunction, this.function method, arrow', c); })(c);
     
     return {
-      n1: function (c) { check(this, 'Function, this.function method -> function', c); },
-      n2: (c) => { check(this, 'Function, this.function method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, this.function method -> function', c); },
+      n2: (c) => { check(this, 'ConstructorFunction, this.function method -> arrow', c); }
     };
   };
 
   this.m4 = (c) => {
-    check(this, 'Function, this.arrow method', c);
-    (function (c) { check(this, 'Function, this.arrow method, function', c); })(c);
-    ((c) => { check(this, 'Function, this.arrow method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, this.arrow method', c);
+    (function (c) { check(this, 'ConstructorFunction, this.arrow method, function', c); })(c);
+    ((c) => { check(this, 'ConstructorFunction, this.arrow method, arrow', c); })(c);
     
     return {
-      n1: function (c) { check(this, 'Function, this.arrow method -> function', c); },
-      n2: (c) => { check(this, 'Function, this.arrow method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, this.arrow method -> function', c); },
+      n2: (c) => { check(this, 'ConstructorFunction, this.arrow method -> arrow', c); }
     };
   };
 }
 
 ConstructorFunction.prototype.m5 = function (c) {
-  check(this, 'Function.prototype.function', c);
-  (function (c) { check(this, 'Function.prototype.function, function, function', c); })(c);
-  ((c) => { check(this, 'Function.prototype.function, function, arrow', c); })(c);
+  check(this, 'ConstructorFunction.prototype.function', c);
+  (function (c) { check(this, 'ConstructorFunction.prototype.function, function, function', c); })(c);
+  ((c) => { check(this, 'ConstructorFunction.prototype.function, function, arrow', c); })(c);
 
   return {
-    n1: function (c) { check(this, 'Function.prototype.function -> function', c); },
-    n2: (c) => { check(this, 'Function.prototype.function -> arrow', c); }
+    n1: function (c) { check(this, 'ConstructorFunction.prototype.function -> function', c); },
+    n2: (c) => { check(this, 'ConstructorFunction.prototype.function -> arrow', c); }
   };
 };
 
 ConstructorFunction.prototype.m6 = (c) => {
-  check(this, 'Function.prototype.arrow', c);
-  (function (c) { check(this, 'Function.prototype.arrow, function, function', c); })(c);
-  ((c) => { check(this, 'Function.prototype.arrow, function, arrow', c); })(c);
+  check(this, 'ConstructorFunction.prototype.arrow', c);
+  (function (c) { check(this, 'ConstructorFunction.prototype.arrow, function, function', c); })(c);
+  ((c) => { check(this, 'ConstructorFunction.prototype.arrow, function, arrow', c); })(c);
   
   return {
-    n1: function (c) { check(this, 'Function.prototype.arrow -> function', c); },
-    n2: (c) => { check(this, 'Function.prototype.arrow -> arrow', c); }
+    n1: function (c) { check(this, 'ConstructorFunction.prototype.arrow -> function', c); },
+    n2: (c) => { check(this, 'ConstructorFunction.prototype.arrow -> arrow', c); }
   };
 };
 
 ConstructorFunction.m7 = function (c) {
-  check(this, 'Function.function', c);
-  (function (c) { check(this, 'Function.function, function, function', c); })(c);
-  ((c) => { check(this, 'Function.function, function, arrow', c); })(c);
+  check(this, 'ConstructorFunction.function', c);
+  (function (c) { check(this, 'ConstructorFunction.function, function, function', c); })(c);
+  ((c) => { check(this, 'ConstructorFunction.function, function, arrow', c); })(c);
   
   return {
-    n1: function (c) { check(this, 'Function.function -> function', c); },
-    n2: (c) => { check(this, 'Function.function -> arrow', c); }
+    n1: function (c) { check(this, 'ConstructorFunction.function -> function', c); },
+    n2: (c) => { check(this, 'ConstructorFunction.function -> arrow', c); }
   };
 };
 
 ConstructorFunction.m8 = (c) => {
-  check(this, 'Function.arrow', c);
-  (function (c) { check(this, 'Function.arrow, function, function', c); })(c);
-  ((c) => { check(this, 'Function.arrow, function, arrow', c); })(c);
+  check(this, 'ConstructorFunction.arrow', c);
+  (function (c) { check(this, 'ConstructorFunction.arrow, function, function', c); })(c);
+  ((c) => { check(this, 'ConstructorFunction.arrow, function, arrow', c); })(c);
   
   return {
-    n1: function (c) { check(this, 'Function.arrow -> function', c); },
-    n2: (c) => { check(this, 'Function.arrow -> arrow', c); }
+    n1: function (c) { check(this, 'ConstructorFunction.arrow -> function', c); },
+    n2: (c) => { check(this, 'ConstructorFunction.arrow -> arrow', c); }
   };
 };
 
@@ -424,10 +424,10 @@ o2.n2('Literal');
 
 // all not allowed in strict mode
 // ConstructorFunction();
-// let FOm5 = ConstructorFunction.prototype.m5('prototype of Function');
+// let FOm5 = ConstructorFunction.prototype.m5('prototype of ConstructorFunction');
 // FOm5.n1('ConstructorFunction');
 // FOm5.n2('ConstructorFunction');
-// let FOm6 = ConstructorFunction.prototype.m6('prototype of Function');
+// let FOm6 = ConstructorFunction.prototype.m6('prototype of ConstructorFunction');
 // FOm6.n1('ConstructorFunction');
 // FOm6.n2('ConstructorFunction');
 // ConstructorFunction.m7('ConstructorFunction');
@@ -436,7 +436,6 @@ o2.n2('Literal');
 for (let i = 0; i < 22; i++) {
   check('', 'not allowed');
 }
-
 
 let fo = new ConstructorFunction();
 let fom3 = fo.m3('object of ConstructorFunction');
