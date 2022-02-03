@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }
+  th { font-weight: bold; }
+  td { padding: 3px; padding-right: 10px; }
+  table { border-collapse: collapse; }
+  table, tr, th, td { border: 1px solid rgba(44, 43, 43, 0.712); }
+  tr:nth-child(even) { background-color: rgb(231, 230, 255) }
+  #columns, #columns tr, #columns th, #columns td { border-style: none; }
+  .equal, .equal:nth-child(even) { background-color: greenyellow; }
+/*  tr.equal:nth-child(even) { background-color: rgb(211, 253, 148); }*/
+  .not-allowed { text-align: center; font-style: italic; color: rgb(156, 156, 156)}
+  </style>
+</head>
+<body>
+  <table id="columns">
+    <tr>
+      <td>
+        <div>sloppy</div>
+        <div id="sloppy"></div>
+      </td>
+      <td>
+        <div>strict</div>
+        <div id="strict"></div>
+      </td>
+    </tr>
+  </table>
+
+  <script>
+// @ts-nocheck
+
+let results1 = []; results1.name = '1';
+let results2 = []; results2.name = '2';
+let target = results1;
+
+var check = (t, msg = '', context = '') => {
+  let res = Object.prototype.toString.call(t);
+  if (res === '[object Undefined]') {
+    res = 'undefined';
+  }
+  if (t === '') {
+    res = '';
+  }
+  else if (t && t.name) {
+    res = t.name;
+  }
+  else if (typeof t === 'object') {
+    res = t.constructor.name;
+  }
+
+  target.push({res, msg, context});
+};
+
+function show(res) {
+  let html = '<table><tr><th>Where</th><th>this ===</th><th>Context</th></tr>';
+  for (const row of res) {
+    html += `<tr${row.equal ? ' Class="equal"' : ''}><td${row.msg === 'not allowed' ? ' Class="not-allowed"' : ''}>${row.msg}</td><td>${row.res}</td><td>${row.context}</td></tr>`;
+  }
+  html += '</table>';
+
+  return html;
+}
+
+
+
+let Literal = {
+  name: 'Literal',
+  m1: function (c) {
+    check(this, 'Literal, function method', c);
+    (function (c) { check(this, 'Literal, function method, function', c); })(c);
+    ((c) => { check(this, 'Literal, function method, arrow', c); })(c);
+
+    return {
+      name: 'Literal.method',
+      n1: function (c) { check(this, 'Literal, function method -> function', c); },
+      n2: (c) => { check(this, 'Literal, function method -> arrow', c); }
+    };
+  },
+  m2: (c) => {
+    check(this, 'Literal, arrow method', c);
+    (function (c) { check(this, 'Literal, arrow method, function', c); })(c);
+    ((c) => { check(this, 'Literal, arrow method, arrow', c); })(c);
+
+    return {
+      name: 'Literal.method',
+      n1: function (c) { check(this, 'Literal, arrow method -> function', c); },
+      n2: (c) => { check(this, 'Literal, arrow method -> arrow', c); }
+    };
+  }
+}
+
+
+
+function ConstructorFunction() {
+  let m1 = function (c) {
+    check(this, 'Function, private function method', c);
+    (function (c) { check(this, 'Function, private function method, function', c); })(c);
+    ((c) => { check(this, 'Function, private function method, arrow', c); })(c);
+
+    return {
+      n1: function () { check(this, 'Function, private function method -> function', c); },
+      n2: (c) => { check(this, 'Function, private function method -> arrow', c); }
+    };
+  };
+
+  let m2 = (c) => {
+    check(this, 'Function, arrow method', c);
+    (function (c) { check(this, 'Function, private arrow method, function', c); })(c);
+    ((c) => { check(this, 'Function, private arrow method, arrow', c); })(c);
+
+    return {
+      n1: function (c) { check(this, 'Function, private arrow method -> function', c); },
+      n2: (c) => { check(this, 'Function, private arrow method -> arrow', c); }
+    };
+  };
+
+  m1('inside ConstructorFunction');
+  m2('inside ConstructorFunction');
+
+
+  this.m3 = function (c) {
+    check(this, 'Function, this.function method', c);
+    (function (c) { check(this, 'Function, this.function method, function', c); })(c);
+    ((c) => { check(this, 'Function, this.function method, arrow', c); })(c);
+    
+    return {
+      n1: function (c) { check(this, 'Function, this.function method -> function', c); },
+      n2: (c) => { check(this, 'Function, this.function method -> arrow', c); }
+    };
+  };
+
+  this.m4 = (c) => {
+    check(this, 'Function, this.arrow method', c);
+    (function (c) { check(this, 'Function, this.arrow method, function', c); })(c);
+    ((c) => { check(this, 'Function, this.arrow method, arrow', c); })(c);
+    
+    return {
+      n1: function (c) { check(this, 'Function, this.arrow method -> function', c); },
+      n2: (c) => { check(this, 'Function, this.arrow method -> arrow', c); }
+    };
+  };
+}
+
+ConstructorFunction.prototype.m5 = function (c) {
+  check(this, 'Function.prototype.function', c);
+  (function (c) { check(this, 'Function.prototype.function, function, function', c); })(c);
+  ((c) => { check(this, 'Function.prototype.function, function, arrow', c); })(c);
+
+  return {
+    n1: function (c) { check(this, 'Function.prototype.function -> function', c); },
+    n2: (c) => { check(this, 'Function.prototype.function -> arrow', c); }
+  };
+};
+
+ConstructorFunction.prototype.m6 = (c) => {
+  check(this, 'Function.prototype.arrow', c);
+  (function (c) { check(this, 'Function.prototype.arrow, function, function', c); })(c);
+  ((c) => { check(this, 'Function.prototype.arrow, function, arrow', c); })(c);
+  
+  return {
+    n1: function (c) { check(this, 'Function.prototype.arrow -> function', c); },
+    n2: (c) => { check(this, 'Function.prototype.arrow -> arrow', c); }
+  };
+};
+
+ConstructorFunction.m7 = function (c) {
+  check(this, 'Function.function', c);
+  (function (c) { check(this, 'Function.function, function, function', c); })(c);
+  ((c) => { check(this, 'Function.function, function, arrow', c); })(c);
+  
+  return {
+    n1: function (c) { check(this, 'Function.function -> function', c); },
+    n2: (c) => { check(this, 'Function.function -> arrow', c); }
+  };
+};
+
+ConstructorFunction.m8 = (c) => {
+  check(this, 'Function.arrow', c);
+  (function (c) { check(this, 'Function.arrow, function, function', c); })(c);
+  ((c) => { check(this, 'Function.arrow, function, arrow', c); })(c);
+  
+  return {
+    n1: function (c) { check(this, 'Function.arrow -> function', c); },
+    n2: (c) => { check(this, 'Function.arrow -> arrow', c); }
+  };
+};
+
+
+
+class Class {
+  name = 'Class';
+  m1 = function (c) {
+    check(this, 'Class, function method', c);
+    (function (c) { check(this, 'Class, function method, function', c); })(c);
+    ((c) => {check(this, 'Class, function method, arrow', c); })(c);
+
+    return {
+      name: 'Class.method',
+      n1: function (c) { check(this, 'Class, function method -> function', c); },
+      n2: (c) => { check(this, 'Class, function method -> arrow', c); }
+    };
+  };
+  m2 = (c) => {
+    check(this, 'Class, arrow method', c);
+    (function (c) { check(this, 'Class, arrow method, function', c); })(c);
+    ((c) => { check(this, 'Class, arrow method, arrow', c); })(c);
+
+    return {
+      name: 'Class.method',
+      n1: function (c) { check(this, 'Class, arrow method -> function', c); },
+      n2: (c) => { check(this, 'Class, arrow method -> arrow', c); }
+    };
+  };
+}
+
+
+
+let o1 = Literal.m1('Literal');
+o1.n1('Literal');
+o1.n2('Literal');
+let o2 = Literal.m2('Literal');
+o2.n1('Literal');
+o2.n2('Literal');
+
+
+ConstructorFunction();
+let FOm5 = ConstructorFunction.prototype.m5('prototype of Function');
+FOm5.n1('ConstructorFunction');
+FOm5.n2('ConstructorFunction');
+let FOm6 = ConstructorFunction.prototype.m6('prototype of Function');
+FOm6.n1('ConstructorFunction');
+FOm6.n2('ConstructorFunction');
+ConstructorFunction.m7('ConstructorFunction');
+ConstructorFunction.m8('ConstructorFunction');
+
+let fo = new ConstructorFunction();
+let fom3 = fo.m3('object of ConstructorFunction');
+fom3.n1('object of ConstructorFunction');
+fom3.n2('object of ConstructorFunction');
+let fom4 = fo.m4('object of ConstructorFunction');
+fom4.n1('object of ConstructorFunction');
+fom4.n2('object of ConstructorFunction');
+let fom5 = fo.m5('object of ConstructorFunction');
+fom5.n1('object of ConstructorFunction');
+fom5.n2('object of ConstructorFunction');
+let fom6 = fo.m6('object of ConstructorFunction');
+fom6.n1('object of ConstructorFunction');
+fom6.n2('object of ConstructorFunction');
+
+let c = new Class();
+let c1 = c.m1('object of Class');
+c1.n1('object of Class');
+c1.n2('object of Class');
+let c2 = c.m2('object of Class');
+c2.n1('object of Class');
+c2.n2('object of Class');
+
+
+
+(function () {
+'use strict';
+target = results2;
+
+
+let Literal = {
+  name: 'Literal',
+  m1: function (c) {
+    check(this, 'Literal, function method', c);
+    (function (c) { check(this, 'Literal, function method, function', c); })(c);
+    ((c) => { check(this, 'Literal, function method, arrow', c); })(c);
+
+    return {
+      name: 'Literal.method',
+      n1: function (c) { check(this, 'Literal, function method -> function', c); },
+      n2: (c) => { check(this, 'Literal, function method -> arrow', c); }
+    };
+  },
+  m2: (c) => {
+    check(this, 'Literal, arrow method', c);
+    (function (c) { check(this, 'Literal, arrow method, function', c); })(c);
+    ((c) => { check(this, 'Literal, arrow method, arrow', c); })(c);
+
+    return {
+      name: 'Literal.method',
+      n1: function (c) { check(this, 'Literal, arrow method -> function', c); },
+      n2: (c) => { check(this, 'Literal, arrow method -> arrow', c); }
+    };
+  }
+}
+
+
+
+function ConstructorFunction() {
+  let m1 = function (c) {
+    check(this, 'Function, private function method', c);
+    (function (c) { check(this, 'Function, private function method, function', c); })(c);
+    ((c) => { check(this, 'Function, private function method, arrow', c); })(c);
+
+    return {
+      n1: function () { check(this, 'Function, private function method -> function', c); },
+      n2: (c) => { check(this, 'Function, private function method -> arrow', c); }
+    };
+  };
+
+  let m2 = (c) => {
+    check(this, 'Function, arrow method', c);
+    (function (c) { check(this, 'Function, private arrow method, function', c); })(c);
+    ((c) => { check(this, 'Function, private arrow method, arrow', c); })(c);
+
+    return {
+      n1: function (c) { check(this, 'Function, private arrow method -> function', c); },
+      n2: (c) => { check(this, 'Function, private arrow method -> arrow', c); }
+    };
+  };
+
+  m1('inside ConstructorFunction');
+  m2('inside ConstructorFunction');
+
+
+  this.m3 = function (c) {
+    check(this, 'Function, this.function method', c);
+    (function (c) { check(this, 'Function, this.function method, function', c); })(c);
+    ((c) => { check(this, 'Function, this.function method, arrow', c); })(c);
+    
+    return {
+      n1: function (c) { check(this, 'Function, this.function method -> function', c); },
+      n2: (c) => { check(this, 'Function, this.function method -> arrow', c); }
+    };
+  };
+
+  this.m4 = (c) => {
+    check(this, 'Function, this.arrow method', c);
+    (function (c) { check(this, 'Function, this.arrow method, function', c); })(c);
+    ((c) => { check(this, 'Function, this.arrow method, arrow', c); })(c);
+    
+    return {
+      n1: function (c) { check(this, 'Function, this.arrow method -> function', c); },
+      n2: (c) => { check(this, 'Function, this.arrow method -> arrow', c); }
+    };
+  };
+}
+
+ConstructorFunction.prototype.m5 = function (c) {
+  check(this, 'Function.prototype.function', c);
+  (function (c) { check(this, 'Function.prototype.function, function, function', c); })(c);
+  ((c) => { check(this, 'Function.prototype.function, function, arrow', c); })(c);
+
+  return {
+    n1: function (c) { check(this, 'Function.prototype.function -> function', c); },
+    n2: (c) => { check(this, 'Function.prototype.function -> arrow', c); }
+  };
+};
+
+ConstructorFunction.prototype.m6 = (c) => {
+  check(this, 'Function.prototype.arrow', c);
+  (function (c) { check(this, 'Function.prototype.arrow, function, function', c); })(c);
+  ((c) => { check(this, 'Function.prototype.arrow, function, arrow', c); })(c);
+  
+  return {
+    n1: function (c) { check(this, 'Function.prototype.arrow -> function', c); },
+    n2: (c) => { check(this, 'Function.prototype.arrow -> arrow', c); }
+  };
+};
+
+ConstructorFunction.m7 = function (c) {
+  check(this, 'Function.function', c);
+  (function (c) { check(this, 'Function.function, function, function', c); })(c);
+  ((c) => { check(this, 'Function.function, function, arrow', c); })(c);
+  
+  return {
+    n1: function (c) { check(this, 'Function.function -> function', c); },
+    n2: (c) => { check(this, 'Function.function -> arrow', c); }
+  };
+};
+
+ConstructorFunction.m8 = (c) => {
+  check(this, 'Function.arrow', c);
+  (function (c) { check(this, 'Function.arrow, function, function', c); })(c);
+  ((c) => { check(this, 'Function.arrow, function, arrow', c); })(c);
+  
+  return {
+    n1: function (c) { check(this, 'Function.arrow -> function', c); },
+    n2: (c) => { check(this, 'Function.arrow -> arrow', c); }
+  };
+};
+
+
+
+class Class {
+  name = 'Class';
+  m1 = function (c) {
+    check(this, 'Class, function method', c);
+    (function (c) { check(this, 'Class, function method, function', c); })(c);
+    ((c) => {check(this, 'Class, function method, arrow', c); })(c);
+
+    return {
+      name: 'Class.method',
+      n1: function (c) { check(this, 'Class, function method -> function', c); },
+      n2: (c) => { check(this, 'Class, function method -> arrow', c); }
+    };
+  };
+  m2 = (c) => {
+    check(this, 'Class, arrow method', c);
+    (function (c) { check(this, 'Class, arrow method, function', c); })(c);
+    ((c) => { check(this, 'Class, arrow method, arrow', c); })(c);
+
+    return {
+      name: 'Class.method',
+      n1: function (c) { check(this, 'Class, arrow method -> function', c); },
+      n2: (c) => { check(this, 'Class, arrow method -> arrow', c); }
+    };
+  };
+}
+
+
+
+let o1 = Literal.m1('Literal');
+o1.n1('Literal');
+o1.n2('Literal');
+let o2 = Literal.m2('Literal');
+o2.n1('Literal');
+o2.n2('Literal');
+
+
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+check('', 'not allowed');
+
+
+// all not allowed in strict mode
+// ConstructorFunction();
+// let FOm5 = ConstructorFunction.prototype.m5('prototype of Function');
+// FOm5.n1('ConstructorFunction');
+// FOm5.n2('ConstructorFunction');
+// let FOm6 = ConstructorFunction.prototype.m6('prototype of Function');
+// FOm6.n1('ConstructorFunction');
+// FOm6.n2('ConstructorFunction');
+// ConstructorFunction.m7('ConstructorFunction');
+// ConstructorFunction.m8('ConstructorFunction');
+
+let fo = new ConstructorFunction();
+let fom3 = fo.m3('object of ConstructorFunction');
+fom3.n1('object of ConstructorFunction');
+fom3.n2('object of ConstructorFunction');
+let fom4 = fo.m4('object of ConstructorFunction');
+fom4.n1('object of ConstructorFunction');
+fom4.n2('object of ConstructorFunction');
+let fom5 = fo.m5('object of ConstructorFunction');
+fom5.n1('object of ConstructorFunction');
+fom5.n2('object of ConstructorFunction');
+let fom6 = fo.m6('object of ConstructorFunction');
+fom6.n1('object of ConstructorFunction');
+fom6.n2('object of ConstructorFunction');
+
+let c = new Class();
+let c1 = c.m1('object of Class');
+c1.n1('object of Class');
+c1.n2('object of Class');
+let c2 = c.m2('object of Class');
+c2.n1('object of Class');
+c2.n2('object of Class');
+
+})();
+
+
+for (let i = 0; i < results1.length; i++) {
+  if (results1[i].res !== results2[i].res && results2[i].msg !== 'not allowed') {
+    results1[i].equal = true;
+    results2[i].equal = true;
+  }
+  else {
+    results1[i].equal = false;
+    results2[i].equal = false;
+  }
+}
+
+let results = [];
+for (let i = 0; i < results1.length; i++) {
+  results.push({r1: results1[i], r2: results2[i]});
+}
+
+results.sort((a, b) => {
+  if (a.r1.msg.toLowerCase() > b.r1.msg.toLowerCase()) {
+    return 1;
+  }
+  if (a.r1.msg.toLowerCase() < b.r1.msg.toLowerCase()) {
+    return -1;
+  }
+  if (a.r1.res.toLowerCase() > b.r1.res.toLowerCase()) {
+    return 1;
+  }
+  if (a.r1.res.toLowerCase() < b.r1.res.toLowerCase()) {
+    return -1;
+  }
+  
+  return 0;
+});
+
+results1 = [];
+results2 = [];
+for (let i = 0; i < results.length; i++) {
+  results1.push(results[i].r1);
+  results2.push(results[i].r2);
+}
+
+document.getElementById('sloppy').innerHTML = show(results1);
+document.getElementById('strict').innerHTML = show(results2);
+
+    </script>
+  </body>
+</html>
+
