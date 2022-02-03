@@ -4,15 +4,14 @@
   <meta charset="UTF-8">
   <style>
     body { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }
-  th { font-weight: bold; }
-  td { padding: 3px; padding-right: 10px; }
-  table { border-collapse: collapse; }
-  table, tr, th, td { border: 1px solid rgba(44, 43, 43, 0.712); }
-  tr:nth-child(even) { background-color: rgb(231, 230, 255) }
-  #columns, #columns tr, #columns th, #columns td { border-style: none; }
-  .equal, .equal:nth-child(even) { background-color: greenyellow; }
-/*  tr.equal:nth-child(even) { background-color: rgb(211, 253, 148); }*/
-  .not-allowed { text-align: center; font-style: italic; color: rgb(156, 156, 156)}
+    th { font-weight: bold; }
+    td { padding: 3px; padding-right: 10px; }
+    table { border-collapse: collapse; }
+    table, tr, th, td { border: 1px solid rgba(44, 43, 43, 0.712); }
+    tr:nth-child(even) { background-color: rgb(231, 230, 255) }
+    #columns, #columns tr, #columns th, #columns td { border-style: none; }
+    .equal, .equal:nth-child(even) { background-color: greenyellow; }
+    .not-allowed { text-align: center; font-style: italic; color: rgb(156, 156, 156)}
   </style>
 </head>
 <body>
@@ -30,8 +29,6 @@
   </table>
 
   <script>
-// @ts-nocheck
-
 let results1 = []; results1.name = '1';
 let results2 = []; results2.name = '2';
 let target = results1;
@@ -425,30 +422,6 @@ o2.n1('Literal');
 o2.n2('Literal');
 
 
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-check('', 'not allowed');
-
-
 // all not allowed in strict mode
 // ConstructorFunction();
 // let FOm5 = ConstructorFunction.prototype.m5('prototype of Function');
@@ -459,6 +432,11 @@ check('', 'not allowed');
 // FOm6.n2('ConstructorFunction');
 // ConstructorFunction.m7('ConstructorFunction');
 // ConstructorFunction.m8('ConstructorFunction');
+
+for (let i = 0; i < 22; i++) {
+  check('', 'not allowed');
+}
+
 
 let fo = new ConstructorFunction();
 let fom3 = fo.m3('object of ConstructorFunction');
