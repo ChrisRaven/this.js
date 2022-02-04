@@ -36,18 +36,11 @@
 <body>
   <div id="results"></div>
   <script>
-let results1 = [];
-let results2 = [];
-let target = results1;
-
-results1.name = '1';
-results2.name = '2';
-
-const NOT_ALLOWED = 'not allowed';
+let results = [];
 
 function check (t, msg = '', context = '') {
   let res;
-  
+
   if (t === '') {
     res = '';
   }
@@ -57,11 +50,21 @@ function check (t, msg = '', context = '') {
   else if (t && t.name) {
     res = t.name;
   }
-  else if (typeof t === 'object') {
+  else if (typeof t === 'object' && t !== null) {
     res = t.constructor.name;
   }
 
-  target.push({res, msg, context});
+  let found = false;
+  for (let row of results) {
+    if (row.msg === msg && row.context === context) {
+      row.res2 = res;
+      found = true;
+      break;
+    }
+  }
+  if (!found) {
+    results.push({res1: res, msg, context});    
+  }
 }
 
 
@@ -215,6 +218,37 @@ class Class {
     };
   }
 }
+
+
+function f(c) {check(this, 'single function', c)};
+let a = (c) => {check(this, 'single arrow', c)};
+
+
+
+f('normal');
+let f1 = f.bind(window, 'bind to window');
+f1();
+f1 = f.bind(null, 'bind to null');
+f1();
+f1 = f.bind(undefined, 'bind to undefined');
+f1();
+f1 = f.bind(this, 'bind to this');
+f1();
+(function () {f('IIFE function')})();
+(() => {f('IIFE arrow')})();
+
+
+a('normal');
+let a1 = a.bind(window, 'bind to window');
+a1();
+a1 = a.bind(null, 'bind to null');
+a1();
+a1 = a.bind(undefined, 'bind to undefined');
+a1();
+a1 = a.bind(this, 'bind to this');
+a1();
+(function () {a('IIFE function')})();
+(() => {a('IIFE arrow')})();
 
 
 
@@ -260,162 +294,33 @@ c2.n2('object of Class');
 
 
 
-(function () {
+(function test() {
 'use strict';
-target = results2;
+
+f('normal');
+let f1 = f.bind(window, 'bind to window');
+f1();
+f1 = f.bind(null, 'bind to null');
+f1();
+f1 = f.bind(undefined, 'bind to undefined');
+f1();
+f1 = f.bind(this, 'bind to this');
+f1();
+(function () {f('IIFE function')})();
+(() => {f('IIFE arrow')})();
 
 
-let Literal = {
-  name: 'Literal',
-  m1: function (c) {
-    check(this, 'Literal, function method', c);
-    (function (c) { check(this, 'Literal, function method, function', c); })(c);
-    ((c) => { check(this, 'Literal, function method, arrow', c); })(c);
-
-    return {
-      name: 'Literal.method',
-      n1: function (c) { check(this, 'Literal, function method -> function', c); },
-      n2: (c) => { check(this, 'Literal, function method -> arrow', c); }
-    };
-  },
-
-  m2: (c) => {
-    check(this, 'Literal, arrow method', c);
-    (function (c) { check(this, 'Literal, arrow method, function', c); })(c);
-    ((c) => { check(this, 'Literal, arrow method, arrow', c); })(c);
-
-    return {
-      name: 'Literal.method',
-      n1: function (c) { check(this, 'Literal, arrow method -> function', c); },
-      n2: (c) => { check(this, 'Literal, arrow method -> arrow', c); }
-    };
-  }
-};
-
-
-
-function ConstructorFunction(context) {
-  let m1 = function (c) {
-    check(this, 'ConstructorFunction, private function method', c + ' ' + context);
-    (function (c) { check(this, 'ConstructorFunction, private function method, function', c); })(c + ' ' + context);
-    ((c) => { check(this, 'ConstructorFunction, private function method, arrow', c); })(c + ' ' + context);
-
-    return {
-      n1: function () { check(this, 'ConstructorFunction, private function method -> function', c + ' ' + context); },
-      n2: (c) => { check(this, 'ConstructorFunction, private function method -> arrow', c + ' ' + context); }
-    };
-  };
-
-  let m2 = (c) => {
-    check(this, 'ConstructorFunction, private arrow method', c + ' ' + context);
-    (function (c) { check(this, 'ConstructorFunction, private arrow method, function', c); })(c + ' ' + context);
-    ((c) => { check(this, 'ConstructorFunction, private arrow method, arrow', c); })(c + ' ' + context);
-
-    return {
-      n1: function (c) { check(this, 'ConstructorFunction, private arrow method -> function', c + ' ' + context); },
-      n2: (c) => { check(this, 'ConstructorFunction, private arrow method -> arrow', c + ' ' + context); }
-    };
-  };
-
-  m1('inside ConstructorFunction');
-  m2('inside ConstructorFunction');
-
-  this.m3 = function (c) {
-    check(this, 'ConstructorFunction, this.function method', c + ' ' + context);
-    (function (c) { check(this, 'ConstructorFunction, this.function method, function', c); })(c + ' ' + context);
-    ((c) => { check(this, 'ConstructorFunction, this.function method, arrow', c); })(c + ' ' + context);
-    
-    return {
-      n1: function (c) { check(this, 'ConstructorFunction, this.function method -> function', c + ' ' + context); },
-      n2: (c) => { check(this, 'ConstructorFunction, this.function method -> arrow', c + ' ' + context); }
-    };
-  };
-
-  this.m4 = (c) => {
-    check(this, 'ConstructorFunction, this.arrow method', c + ' ' + context);
-    (function (c) { check(this, 'ConstructorFunction, this.arrow method, function', c); })(c + ' ' + context);
-    ((c) => { check(this, 'ConstructorFunction, this.arrow method, arrow', c); })(c + ' ' + context);
-    
-    return {
-      n1: function (c) { check(this, 'ConstructorFunction, this.arrow method -> function', c + ' ' + context); },
-      n2: (c) => { check(this, 'ConstructorFunction, this.arrow method -> arrow', c + ' ' + context); }
-    };
-  };
-}
-
-
-ConstructorFunction.prototype.m5 = function (c) {
-  check(this, 'ConstructorFunction.prototype.function', c);
-  (function (c) { check(this, 'ConstructorFunction.prototype.function, function, function', c); })(c);
-  ((c) => { check(this, 'ConstructorFunction.prototype.function, function, arrow', c); })(c);
-
-  return {
-    n1: function (c) { check(this, 'ConstructorFunction.prototype.function -> function', c); },
-    n2: (c) => { check(this, 'ConstructorFunction.prototype.function -> arrow', c); }
-  };
-};
-
-ConstructorFunction.prototype.m6 = (c) => {
-  check(this, 'ConstructorFunction.prototype.arrow', c);
-  (function (c) { check(this, 'ConstructorFunction.prototype.arrow, function, function', c); })(c);
-  ((c) => { check(this, 'ConstructorFunction.prototype.arrow, function, arrow', c); })(c);
-  
-  return {
-    n1: function (c) { check(this, 'ConstructorFunction.prototype.arrow -> function', c); },
-    n2: (c) => { check(this, 'ConstructorFunction.prototype.arrow -> arrow', c); }
-  };
-};
-
-ConstructorFunction.m7 = function (c) {
-  check(this, 'ConstructorFunction.function', c);
-  (function (c) { check(this, 'ConstructorFunction.function, function, function', c); })(c);
-  ((c) => { check(this, 'ConstructorFunction.function, function, arrow', c); })(c);
-  
-  return {
-    n1: function (c) { check(this, 'ConstructorFunction.function -> function', c); },
-    n2: (c) => { check(this, 'ConstructorFunction.function -> arrow', c); }
-  };
-};
-
-ConstructorFunction.m8 = (c) => {
-  check(this, 'ConstructorFunction.arrow', c);
-  (function (c) { check(this, 'ConstructorFunction.arrow, function, function', c); })(c);
-  ((c) => { check(this, 'ConstructorFunction.arrow, function, arrow', c); })(c);
-  
-  return {
-    n1: function (c) { check(this, 'ConstructorFunction.arrow -> function', c); },
-    n2: (c) => { check(this, 'ConstructorFunction.arrow -> arrow', c); }
-  };
-};
-
-
-
-class Class {
-  m1 = function (c) {
-    check(this, 'Class, function method', c);
-    (function (c) { check(this, 'Class, function method, function', c); })(c);
-    ((c) => {check(this, 'Class, function method, arrow', c); })(c);
-
-    return {
-      name: 'Class.method',
-      n1: function (c) { check(this, 'Class, function method -> function', c); },
-      n2: (c) => { check(this, 'Class, function method -> arrow', c); }
-    };
-  };
-
-  m2 = (c) => {
-    check(this, 'Class, arrow method', c);
-    (function (c) { check(this, 'Class, arrow method, function', c); })(c);
-    ((c) => { check(this, 'Class, arrow method, arrow', c); })(c);
-
-    return {
-      name: 'Class.method',
-      n1: function (c) { check(this, 'Class, arrow method -> function', c); },
-      n2: (c) => { check(this, 'Class, arrow method -> arrow', c); }
-    };
-  };
-}
-
+a('normal');
+let a1 = a.bind(window, 'bind to window');
+a1();
+a1 = a.bind(null, 'bind to null');
+a1();
+a1 = a.bind(undefined, 'bind to undefined');
+a1();
+a1 = a.bind(this, 'bind to this');
+a1();
+(function () {a('IIFE function')})();
+(() => {a('IIFE arrow')})();
 
 
 let o1 = Literal.m1('Literal');
@@ -437,11 +342,8 @@ o2.n2('Literal');
 // ConstructorFunction.m7('ConstructorFunction');
 // ConstructorFunction.m8('ConstructorFunction');
 
-for (let i = 0; i < 22; i++) {
-  check('', NOT_ALLOWED);
-}
 
-let fo = new ConstructorFunction('<b>(new)></b>');
+let fo = new ConstructorFunction('<b>(new)</b>');
 let fom3 = fo.m3('object of ConstructorFunction');
 fom3.n1('object of ConstructorFunction');
 fom3.n2('object of ConstructorFunction');
@@ -466,20 +368,12 @@ c2.n2('object of Class');
 })();
 
 
-for (let i = 0; i < results1.length; i++) {
-    results1[i].equal = results1[i].res !== results2[i].res;
-}
+results.forEach((el) => {
+  if (el.res2 === undefined) {
+    el.res2 = 'not allowed';
+  }
+});
 
-let results = [];
-for (let i = 0; i < results1.length; i++) {
-  results.push({
-    msg: results1[i].msg,
-    context: results1[i].context,
-    res1: results1[i].res,
-    res2: results2[i].msg === NOT_ALLOWED ? NOT_ALLOWED : results2[i].res,
-    equal: results1[i].equal
-  });
-}
 
 // sorting my message, then by "this", then by context
 results.sort((a, b) => {
@@ -519,14 +413,20 @@ function show(res) {
         <th>strict</th>
       </tr>
       `;
-
+let cls = '';
   for (const row of res) {
+    if (['ConstructorFunction', 'inside ConstructorFunction ', 'prototype of ConstructorFunction'].includes(row.context)) {
+      cls = ' class="not-allowed"';
+    }
+    else {
+      cls = '';
+    }
     html += `
-      <tr${row.equal ? ' class="equal"' : ''}>
+      <tr${cls ? ' class="equal"' : ''}>
         <td>${row.msg}</td>
         <td>${row.context}</td>
         <td>${row.res1}</td>
-        <td${row.res2 === NOT_ALLOWED ? ' class="not-allowed"' : ''}>${row.res2}</td>
+        <td${cls}>${row.res2}</td>
       </tr>`;
   }
   html += '</table>';
@@ -540,4 +440,3 @@ document.getElementById('results').innerHTML = show(results);
     </script>
   </body>
 </html>
-
