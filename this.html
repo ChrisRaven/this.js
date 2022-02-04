@@ -8,10 +8,10 @@
     td { padding: 3px; padding-right: 10px; }
     table { border-collapse: collapse; }
     table, tr, th, td { border: 1px solid rgba(44, 43, 43, 0.712); }
-    tr:nth-child(even) { background-color: rgb(231, 230, 255) }
+    tr:nth-child(even) { background-color: rgb(231, 230, 255); }
     #columns, #columns tr, #columns th, #columns td { border-style: none; }
     .equal, .equal:nth-child(even) { background-color: greenyellow; }
-    .not-allowed { text-align: center; font-style: italic; color: rgb(156, 156, 156)}
+    .not-allowed { text-align: center; font-style: italic; color: rgb(156, 156, 156); }
   </style>
 </head>
 <body>
@@ -29,17 +29,22 @@
   </table>
 
   <script>
-let results1 = []; results1.name = '1';
-let results2 = []; results2.name = '2';
+let results1 = [];
+let results2 = [];
 let target = results1;
 
-var check = (t, msg = '', context = '') => {
-  let res = Object.prototype.toString.call(t);
-  if (res === '[object Undefined]') {
-    res = 'undefined';
-  }
+results1.name = '1';
+results2.name = '2';
+
+
+function check (t, msg = '', context = '') {
+  let res;
+  
   if (t === '') {
     res = '';
+  }
+  else if (Object.prototype.toString.call(t) === '[object Undefined]') { // via the call() method so it works also for undefined "t"
+    res = 'undefined';
   }
   else if (t && t.name) {
     res = t.name;
@@ -49,12 +54,25 @@ var check = (t, msg = '', context = '') => {
   }
 
   target.push({res, msg, context});
-};
+}
+
 
 function show(res) {
-  let html = '<table><tr><th>Where</th><th>this ===</th><th>Context</th></tr>';
+  let html = `
+    <table>
+      <tr>
+        <th>Where</th>
+        <th>this ===</th>
+        <th>Context</th>
+      </tr>`;
+
   for (const row of res) {
-    html += `<tr${row.equal ? ' Class="equal"' : ''}><td${row.msg === 'not allowed' ? ' Class="not-allowed"' : ''}>${row.msg}</td><td>${row.res}</td><td>${row.context}</td></tr>`;
+    html += `
+      <tr${row.equal ? ' class="equal"' : ''}>
+        <td${row.msg === 'not allowed' ? ' class="not-allowed"' : ''}>${row.msg}</td>
+        <td>${row.res}</td>
+        <td>${row.context}</td>
+      </tr>`;
   }
   html += '</table>';
 
@@ -87,7 +105,7 @@ let Literal = {
       n2: (c) => { check(this, 'Literal, arrow method -> arrow', c); }
     };
   }
-}
+};
 
 
 
@@ -117,7 +135,6 @@ function ConstructorFunction() {
   m1('inside ConstructorFunction');
   m2('inside ConstructorFunction');
 
-
   this.m3 = function (c) {
     check(this, 'ConstructorFunction, this.function method', c);
     (function (c) { check(this, 'ConstructorFunction, this.function method, function', c); })(c);
@@ -140,6 +157,7 @@ function ConstructorFunction() {
     };
   };
 }
+
 
 ConstructorFunction.prototype.m5 = function (c) {
   check(this, 'ConstructorFunction.prototype.function', c);
@@ -188,7 +206,6 @@ ConstructorFunction.m8 = (c) => {
 
 
 class Class {
-  name = 'Class';
   m1 = function (c) {
     check(this, 'Class, function method', c);
     (function (c) { check(this, 'Class, function method, function', c); })(c);
@@ -200,6 +217,7 @@ class Class {
       n2: (c) => { check(this, 'Class, function method -> arrow', c); }
     };
   };
+
   m2 = (c) => {
     check(this, 'Class, arrow method', c);
     (function (c) { check(this, 'Class, arrow method, function', c); })(c);
@@ -210,7 +228,7 @@ class Class {
       n1: function (c) { check(this, 'Class, arrow method -> function', c); },
       n2: (c) => { check(this, 'Class, arrow method -> arrow', c); }
     };
-  };
+  }
 }
 
 
@@ -275,6 +293,7 @@ let Literal = {
       n2: (c) => { check(this, 'Literal, function method -> arrow', c); }
     };
   },
+
   m2: (c) => {
     check(this, 'Literal, arrow method', c);
     (function (c) { check(this, 'Literal, arrow method, function', c); })(c);
@@ -286,7 +305,7 @@ let Literal = {
       n2: (c) => { check(this, 'Literal, arrow method -> arrow', c); }
     };
   }
-}
+};
 
 
 
@@ -316,7 +335,6 @@ function ConstructorFunction() {
   m1('inside ConstructorFunction');
   m2('inside ConstructorFunction');
 
-
   this.m3 = function (c) {
     check(this, 'ConstructorFunction, this.function method', c);
     (function (c) { check(this, 'ConstructorFunction, this.function method, function', c); })(c);
@@ -339,6 +357,7 @@ function ConstructorFunction() {
     };
   };
 }
+
 
 ConstructorFunction.prototype.m5 = function (c) {
   check(this, 'ConstructorFunction.prototype.function', c);
@@ -387,7 +406,6 @@ ConstructorFunction.m8 = (c) => {
 
 
 class Class {
-  name = 'Class';
   m1 = function (c) {
     check(this, 'Class, function method', c);
     (function (c) { check(this, 'Class, function method, function', c); })(c);
@@ -399,6 +417,7 @@ class Class {
       n2: (c) => { check(this, 'Class, function method -> arrow', c); }
     };
   };
+
   m2 = (c) => {
     check(this, 'Class, arrow method', c);
     (function (c) { check(this, 'Class, arrow method, function', c); })(c);
