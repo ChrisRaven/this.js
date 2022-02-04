@@ -3,31 +3,38 @@
 <head>
   <meta charset="UTF-8">
   <style>
-    body { font-size: 12px; font-family: Arial, Helvetica, sans-serif; }
-    th { font-weight: bold; }
-    td { padding: 3px; padding-right: 10px; }
-    table { border-collapse: collapse; }
-    table, tr, th, td { border: 1px solid rgba(44, 43, 43, 0.712); }
-    tr:nth-child(even) { background-color: rgb(231, 230, 255); }
-    #columns, #columns tr, #columns th, #columns td { border-style: none; }
-    .equal, .equal:nth-child(even) { background-color: greenyellow; }
-    .not-allowed { text-align: center; font-style: italic; color: rgb(156, 156, 156); }
+    body {
+      font-size: 12px;
+      font-family: Arial, Helvetica, sans-serif;
+    }
+    table {
+      border-collapse: collapse;
+      border: 1px solid rgba(44, 43, 43, 0.712);
+    }
+    tr:nth-child(even) {
+      background-color: rgb(231, 230, 255);
+    }
+    th, td {
+      border-right: 1px solid rgba(44, 43, 43, 0.712);
+      padding: 3px 10px;
+    }
+    th {
+      font-weight: bold;
+      border-bottom: 1px solid rgba(44, 43, 43, 0.712);
+      background-color: rgb(255, 230, 193);
+    }
+    .equal, .equal:nth-child(even) {
+      background-color: greenyellow;
+    }
+    .not-allowed {
+      text-align: center;
+      font-style: italic;
+      color: rgb(156, 156, 156);
+    }
   </style>
 </head>
 <body>
-  <table id="columns">
-    <tr>
-      <td>
-        <div>sloppy</div>
-        <div id="sloppy"></div>
-      </td>
-      <td>
-        <div>strict</div>
-        <div id="strict"></div>
-      </td>
-    </tr>
-  </table>
-
+  <div id="results"></div>
   <script>
 let results1 = [];
 let results2 = [];
@@ -36,6 +43,7 @@ let target = results1;
 results1.name = '1';
 results2.name = '2';
 
+const NOT_ALLOWED = 'not allowed';
 
 function check (t, msg = '', context = '') {
   let res;
@@ -55,30 +63,6 @@ function check (t, msg = '', context = '') {
 
   target.push({res, msg, context});
 }
-
-
-function show(res) {
-  let html = `
-    <table>
-      <tr>
-        <th>Where</th>
-        <th>this ===</th>
-        <th>Context</th>
-      </tr>`;
-
-  for (const row of res) {
-    html += `
-      <tr${row.equal ? ' class="equal"' : ''}>
-        <td${row.msg === 'not allowed' ? ' class="not-allowed"' : ''}>${row.msg}</td>
-        <td>${row.res}</td>
-        <td>${row.context}</td>
-      </tr>`;
-  }
-  html += '</table>';
-
-  return html;
-}
-
 
 
 let Literal = {
@@ -109,26 +93,27 @@ let Literal = {
 
 
 
-function ConstructorFunction() {
+function ConstructorFunction(context) {
+  
   let m1 = function (c) {
-    check(this, 'ConstructorFunction, private function method', c);
-    (function (c) { check(this, 'ConstructorFunction, private function method, function', c); })(c);
-    ((c) => { check(this, 'ConstructorFunction, private function method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, private function method', c + ' ' + context);
+    (function (c) { check(this, 'ConstructorFunction, private function method, function', c); })(c + ' ' + context);
+    ((c) => { check(this, 'ConstructorFunction, private function method, arrow', c); })(c + ' ' + context);
 
     return {
-      n1: function () { check(this, 'ConstructorFunction, private function method -> function', c); },
-      n2: (c) => { check(this, 'ConstructorFunction, private function method -> arrow', c); }
+      n1: function () { check(this, 'ConstructorFunction, private function method -> function', c + ' ' + context); },
+      n2: (c) => { check(this, 'ConstructorFunction, private function method -> arrow', c + ' ' + context); }
     };
   };
 
   let m2 = (c) => {
-    check(this, 'ConstructorFunction, arrow method', c);
-    (function (c) { check(this, 'ConstructorFunction, private arrow method, function', c); })(c);
-    ((c) => { check(this, 'ConstructorFunction, private arrow method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, private arrow method', c + ' ' + context);
+    (function (c) { check(this, 'ConstructorFunction, private arrow method, function', c); })(c + ' ' + context);
+    ((c) => { check(this, 'ConstructorFunction, private arrow method, arrow', c); })(c + ' ' + context);
 
     return {
-      n1: function (c) { check(this, 'ConstructorFunction, private arrow method -> function', c); },
-      n2: (c) => { check(this, 'ConstructorFunction, private arrow method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, private arrow method -> function', c + ' ' + context); },
+      n2: (c) => { check(this, 'ConstructorFunction, private arrow method -> arrow', c + ' ' + context); }
     };
   };
 
@@ -136,24 +121,24 @@ function ConstructorFunction() {
   m2('inside ConstructorFunction');
 
   this.m3 = function (c) {
-    check(this, 'ConstructorFunction, this.function method', c);
-    (function (c) { check(this, 'ConstructorFunction, this.function method, function', c); })(c);
-    ((c) => { check(this, 'ConstructorFunction, this.function method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, this.function method', c + ' ' + context);
+    (function (c) { check(this, 'ConstructorFunction, this.function method, function', c); })(c + ' ' + context);
+    ((c) => { check(this, 'ConstructorFunction, this.function method, arrow', c); })(c + ' ' + context);
     
     return {
-      n1: function (c) { check(this, 'ConstructorFunction, this.function method -> function', c); },
-      n2: (c) => { check(this, 'ConstructorFunction, this.function method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, this.function method -> function', c + ' ' + context); },
+      n2: (c) => { check(this, 'ConstructorFunction, this.function method -> arrow', c + ' ' + context); }
     };
   };
 
   this.m4 = (c) => {
-    check(this, 'ConstructorFunction, this.arrow method', c);
-    (function (c) { check(this, 'ConstructorFunction, this.arrow method, function', c); })(c);
-    ((c) => { check(this, 'ConstructorFunction, this.arrow method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, this.arrow method', c + ' ' + context);
+    (function (c) { check(this, 'ConstructorFunction, this.arrow method, function', c); })(c + ' ' + context);
+    ((c) => { check(this, 'ConstructorFunction, this.arrow method, arrow', c); })(c + ' ' + context);
     
     return {
-      n1: function (c) { check(this, 'ConstructorFunction, this.arrow method -> function', c); },
-      n2: (c) => { check(this, 'ConstructorFunction, this.arrow method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, this.arrow method -> function', c + ' ' + context); },
+      n2: (c) => { check(this, 'ConstructorFunction, this.arrow method -> arrow', c + ' ' + context); }
     };
   };
 }
@@ -241,7 +226,7 @@ o2.n1('Literal');
 o2.n2('Literal');
 
 
-ConstructorFunction();
+ConstructorFunction('');
 let FOm5 = ConstructorFunction.prototype.m5('prototype of ConstructorFunction');
 FOm5.n1('ConstructorFunction');
 FOm5.n2('ConstructorFunction');
@@ -251,7 +236,7 @@ FOm6.n2('ConstructorFunction');
 ConstructorFunction.m7('ConstructorFunction');
 ConstructorFunction.m8('ConstructorFunction');
 
-let fo = new ConstructorFunction();
+let fo = new ConstructorFunction('<b>(new)</b>');
 let fom3 = fo.m3('object of ConstructorFunction');
 fom3.n1('object of ConstructorFunction');
 fom3.n2('object of ConstructorFunction');
@@ -309,26 +294,26 @@ let Literal = {
 
 
 
-function ConstructorFunction() {
+function ConstructorFunction(context) {
   let m1 = function (c) {
-    check(this, 'ConstructorFunction, private function method', c);
-    (function (c) { check(this, 'ConstructorFunction, private function method, function', c); })(c);
-    ((c) => { check(this, 'ConstructorFunction, private function method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, private function method', c + ' ' + context);
+    (function (c) { check(this, 'ConstructorFunction, private function method, function', c); })(c + ' ' + context);
+    ((c) => { check(this, 'ConstructorFunction, private function method, arrow', c); })(c + ' ' + context);
 
     return {
-      n1: function () { check(this, 'ConstructorFunction, private function method -> function', c); },
-      n2: (c) => { check(this, 'ConstructorFunction, private function method -> arrow', c); }
+      n1: function () { check(this, 'ConstructorFunction, private function method -> function', c + ' ' + context); },
+      n2: (c) => { check(this, 'ConstructorFunction, private function method -> arrow', c + ' ' + context); }
     };
   };
 
   let m2 = (c) => {
-    check(this, 'ConstructorFunction, arrow method', c);
-    (function (c) { check(this, 'ConstructorFunction, private arrow method, function', c); })(c);
-    ((c) => { check(this, 'ConstructorFunction, private arrow method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, private arrow method', c + ' ' + context);
+    (function (c) { check(this, 'ConstructorFunction, private arrow method, function', c); })(c + ' ' + context);
+    ((c) => { check(this, 'ConstructorFunction, private arrow method, arrow', c); })(c + ' ' + context);
 
     return {
-      n1: function (c) { check(this, 'ConstructorFunction, private arrow method -> function', c); },
-      n2: (c) => { check(this, 'ConstructorFunction, private arrow method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, private arrow method -> function', c + ' ' + context); },
+      n2: (c) => { check(this, 'ConstructorFunction, private arrow method -> arrow', c + ' ' + context); }
     };
   };
 
@@ -336,24 +321,24 @@ function ConstructorFunction() {
   m2('inside ConstructorFunction');
 
   this.m3 = function (c) {
-    check(this, 'ConstructorFunction, this.function method', c);
-    (function (c) { check(this, 'ConstructorFunction, this.function method, function', c); })(c);
-    ((c) => { check(this, 'ConstructorFunction, this.function method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, this.function method', c + ' ' + context);
+    (function (c) { check(this, 'ConstructorFunction, this.function method, function', c); })(c + ' ' + context);
+    ((c) => { check(this, 'ConstructorFunction, this.function method, arrow', c); })(c + ' ' + context);
     
     return {
-      n1: function (c) { check(this, 'ConstructorFunction, this.function method -> function', c); },
-      n2: (c) => { check(this, 'ConstructorFunction, this.function method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, this.function method -> function', c + ' ' + context); },
+      n2: (c) => { check(this, 'ConstructorFunction, this.function method -> arrow', c + ' ' + context); }
     };
   };
 
   this.m4 = (c) => {
-    check(this, 'ConstructorFunction, this.arrow method', c);
-    (function (c) { check(this, 'ConstructorFunction, this.arrow method, function', c); })(c);
-    ((c) => { check(this, 'ConstructorFunction, this.arrow method, arrow', c); })(c);
+    check(this, 'ConstructorFunction, this.arrow method', c + ' ' + context);
+    (function (c) { check(this, 'ConstructorFunction, this.arrow method, function', c); })(c + ' ' + context);
+    ((c) => { check(this, 'ConstructorFunction, this.arrow method, arrow', c); })(c + ' ' + context);
     
     return {
-      n1: function (c) { check(this, 'ConstructorFunction, this.arrow method -> function', c); },
-      n2: (c) => { check(this, 'ConstructorFunction, this.arrow method -> arrow', c); }
+      n1: function (c) { check(this, 'ConstructorFunction, this.arrow method -> function', c + ' ' + context); },
+      n2: (c) => { check(this, 'ConstructorFunction, this.arrow method -> arrow', c + ' ' + context); }
     };
   };
 }
@@ -442,7 +427,7 @@ o2.n2('Literal');
 
 
 // all not allowed in strict mode
-// ConstructorFunction();
+// ConstructorFunction('');
 // let FOm5 = ConstructorFunction.prototype.m5('prototype of ConstructorFunction');
 // FOm5.n1('ConstructorFunction');
 // FOm5.n2('ConstructorFunction');
@@ -453,10 +438,10 @@ o2.n2('Literal');
 // ConstructorFunction.m8('ConstructorFunction');
 
 for (let i = 0; i < 22; i++) {
-  check('', 'not allowed');
+  check('', NOT_ALLOWED);
 }
 
-let fo = new ConstructorFunction();
+let fo = new ConstructorFunction('<b>(new)></b>');
 let fom3 = fo.m3('object of ConstructorFunction');
 fom3.n1('object of ConstructorFunction');
 fom3.n2('object of ConstructorFunction');
@@ -482,47 +467,75 @@ c2.n2('object of Class');
 
 
 for (let i = 0; i < results1.length; i++) {
-  if (results1[i].res !== results2[i].res && results2[i].msg !== 'not allowed') {
-    results1[i].equal = true;
-    results2[i].equal = true;
-  }
-  else {
-    results1[i].equal = false;
-    results2[i].equal = false;
-  }
+    results1[i].equal = results1[i].res !== results2[i].res;
 }
 
 let results = [];
 for (let i = 0; i < results1.length; i++) {
-  results.push({r1: results1[i], r2: results2[i]});
+  results.push({
+    msg: results1[i].msg,
+    context: results1[i].context,
+    res1: results1[i].res,
+    res2: results2[i].msg === NOT_ALLOWED ? NOT_ALLOWED : results2[i].res,
+    equal: results1[i].equal
+  });
 }
 
+// sorting my message, then by "this", then by context
 results.sort((a, b) => {
-  if (a.r1.msg.toLowerCase() > b.r1.msg.toLowerCase()) {
+  if (a.msg.toLowerCase() > b.msg.toLowerCase()) {
     return 1;
   }
-  if (a.r1.msg.toLowerCase() < b.r1.msg.toLowerCase()) {
+  if (a.msg.toLowerCase() < b.msg.toLowerCase()) {
     return -1;
   }
-  if (a.r1.res.toLowerCase() > b.r1.res.toLowerCase()) {
+  if (a.res1.toLowerCase() > b.res1.toLowerCase()) {
     return 1;
   }
-  if (a.r1.res.toLowerCase() < b.r1.res.toLowerCase()) {
+  if (a.res1.toLowerCase() < b.res1.toLowerCase()) {
+    return -1;
+  }
+  if (a.context.toLowerCase() > b.context.toLowerCase()) {
+    return 1;
+  }
+  if (a.context.toLowerCase() < b.context.toLowerCase()) {
     return -1;
   }
   
   return 0;
 });
 
-results1 = [];
-results2 = [];
-for (let i = 0; i < results.length; i++) {
-  results1.push(results[i].r1);
-  results2.push(results[i].r2);
+
+function show(res) {
+  let html = `
+    <table>
+      <tr>
+        <th rowspan=2>What</th>
+        <th rowspan=2>Where</th>
+        <th colspan=2>this ===</th>
+      </tr>
+      <tr>
+        <th>sloopy</th>
+        <th>strict</th>
+      </tr>
+      `;
+
+  for (const row of res) {
+    html += `
+      <tr${row.equal ? ' class="equal"' : ''}>
+        <td>${row.msg}</td>
+        <td>${row.context}</td>
+        <td>${row.res1}</td>
+        <td${row.res2 === NOT_ALLOWED ? ' class="not-allowed"' : ''}>${row.res2}</td>
+      </tr>`;
+  }
+  html += '</table>';
+
+  return html;
 }
 
-document.getElementById('sloppy').innerHTML = show(results1);
-document.getElementById('strict').innerHTML = show(results2);
+
+document.getElementById('results').innerHTML = show(results);
 
     </script>
   </body>
