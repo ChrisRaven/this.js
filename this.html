@@ -11,6 +11,9 @@
       border-collapse: collapse;
       border: 1px solid rgba(44, 43, 43, 0.712);
     }
+    .content, .content > tbody > tr, .content > tbody > tr > td {
+      border: none;
+    }
     tr:nth-child(even) {
       background-color: rgb(231, 230, 255);
     }
@@ -21,20 +24,35 @@
     th {
       font-weight: bold;
       border-bottom: 1px solid rgba(44, 43, 43, 0.712);
-      background-color: rgb(255, 230, 193);
+      background-color: rgb(171, 255, 145);
     }
-    .equal, .equal:nth-child(even) {
-      background-color: greenyellow;
+    .not-allowed, .not-allowed:nth-child(even) {
+      background-color: rgb(253, 171, 168);
     }
-    .not-allowed {
-      text-align: center;
-      font-style: italic;
-      color: rgb(156, 156, 156);
+    .legend {
+      vertical-align: top;
+    }
+    .not-allowed-legend {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 1px solid black;
+      vertical-align: middle;
+      margin-right: 10px;
     }
   </style>
 </head>
 <body>
-  <div id="results"></div>
+  <table class="content">
+    <tr>
+      <td>
+        <div id="results"></div>
+      </td>
+      <td class="legend">
+        <div class="not-allowed not-allowed-legend"></div><span>not allowed in strict mode</span>
+      </td>
+    </tr>
+  </table>
   <script>
 let results = [];
 
@@ -294,7 +312,7 @@ c2.n2('object of Class');
 
 
 
-(function test() {
+(function test(window) {
 'use strict';
 
 f('normal');
@@ -365,7 +383,7 @@ let c2 = c.m2('object of Class');
 c2.n1('object of Class');
 c2.n2('object of Class');
 
-})();
+})(window);
 
 
 results.forEach((el) => {
@@ -404,39 +422,29 @@ function show(res) {
   let html = `
     <table>
       <tr>
-        <th rowspan=2>What</th>
-        <th rowspan=2>Where</th>
-        <th colspan=2>this ===</th>
-      </tr>
-      <tr>
-        <th>sloopy</th>
-        <th>strict</th>
+        <th>What</th>
+        <th>Where</th>
+        <th>this ===</th>
       </tr>
       `;
 let cls = '';
   for (const row of res) {
-    if (['ConstructorFunction', 'inside ConstructorFunction ', 'prototype of ConstructorFunction'].includes(row.context)) {
-      cls = ' class="not-allowed"';
-    }
-    else {
-      cls = '';
-    }
+    cls = row.res2 === 'not allowed' ? ' class="not-allowed"' : '';
     html += `
-      <tr${cls ? ' class="equal"' : ''}>
+      <tr${cls}>
         <td>${row.msg}</td>
         <td>${row.context}</td>
         <td>${row.res1}</td>
-        <td${cls}>${row.res2}</td>
       </tr>`;
   }
   html += '</table>';
-
   return html;
 }
-
 
 document.getElementById('results').innerHTML = show(results);
 
     </script>
   </body>
 </html>
+
+
