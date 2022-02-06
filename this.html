@@ -11,13 +11,16 @@
       border-collapse: collapse;
       border: 1px solid rgba(44, 43, 43, 0.712);
     }
-    .content, .content > tbody > tr, .content > tbody > tr > td {
+    .content,
+    .content > tbody > tr,
+    .content > tbody > tr > td {
       border: none;
     }
     tr:nth-child(even) {
       background-color: rgb(231, 230, 255);
     }
-    th, td {
+    th,
+    td {
       border-right: 1px solid rgba(44, 43, 43, 0.712);
       padding: 3px 10px;
     }
@@ -26,7 +29,8 @@
       border-bottom: 1px solid rgba(44, 43, 43, 0.712);
       background-color: rgb(171, 255, 145);
     }
-    .not-allowed, .not-allowed:nth-child(even) {
+    .not-allowed,
+    .not-allowed:nth-child(even) {
       background-color: rgb(253, 171, 168);
     }
     .legend {
@@ -57,13 +61,10 @@
 let results = [];
 
 function check (t, msg = '', context = '') {
-  let res;
+  let res = 'undefined';
 
   if (t === '') {
     res = '';
-  }
-  else if (Object.prototype.toString.call(t) === '[object Undefined]') { // via the call() method so it works also for undefined "t"
-    res = 'undefined';
   }
   else if (t && t.name) {
     res = t.name;
@@ -386,14 +387,8 @@ c2.n2('object of Class');
 })(window);
 
 
-results.forEach((el) => {
-  if (el.res2 === undefined) {
-    el.res2 = 'not allowed';
-  }
-});
 
-
-// sorting my message, then by "this", then by context
+// sorting by "What", then by "Where", then by "this"
 results.sort((a, b) => {
   if (a.msg.toLowerCase() > b.msg.toLowerCase()) {
     return 1;
@@ -401,16 +396,18 @@ results.sort((a, b) => {
   if (a.msg.toLowerCase() < b.msg.toLowerCase()) {
     return -1;
   }
-  if (a.res1.toLowerCase() > b.res1.toLowerCase()) {
-    return 1;
-  }
-  if (a.res1.toLowerCase() < b.res1.toLowerCase()) {
-    return -1;
-  }
+
   if (a.context.toLowerCase() > b.context.toLowerCase()) {
     return 1;
   }
   if (a.context.toLowerCase() < b.context.toLowerCase()) {
+    return -1;
+  }
+
+  if (a.res1.toLowerCase() > b.res1.toLowerCase()) {
+    return 1;
+  }
+  if (a.res1.toLowerCase() < b.res1.toLowerCase()) {
     return -1;
   }
   
@@ -427,9 +424,10 @@ function show(res) {
         <th>this ===</th>
       </tr>
       `;
-let cls = '';
+
+  let cls;
   for (const row of res) {
-    cls = row.res2 === 'not allowed' ? ' class="not-allowed"' : '';
+    cls = row.res2 === undefined ? ' class="not-allowed"' : '';
     html += `
       <tr${cls}>
         <td>${row.msg}</td>
@@ -438,6 +436,7 @@ let cls = '';
       </tr>`;
   }
   html += '</table>';
+
   return html;
 }
 
@@ -446,5 +445,3 @@ document.getElementById('results').innerHTML = show(results);
     </script>
   </body>
 </html>
-
-
